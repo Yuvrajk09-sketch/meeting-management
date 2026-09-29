@@ -1,0 +1,151 @@
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.background-overlay {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, #38bdf820 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, #818cf820 0%, transparent 40%);
+    z-index: -1;
+    animation: drift 20s linear infinite alternate;
+}
+
+@keyframes drift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-5%, 5%); }
+}
+
+.title-gradient {
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+}
+
+.glass-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+.glass-input {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3) !important;
+    border-color: #38bdf8 !important;
+}
+
+.glass-input::placeholder {
+    color: #64748b !important;
+}
+
+select.glass-input option {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.3);
+}
+
+.meeting-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.meeting-card:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.meet-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    margin-top: 1rem;
+    transition: all 0.2s ease;
+}
+
+.meet-link:hover {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn-action {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.btn-action:hover {
+    background: rgba(255,255,255,0.1);
+    color: #f8fafc;
+}
+
+.btn-delete:hover {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.3);
+    color: #f43f5e;
+}
+
+.btn-edit:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+}
