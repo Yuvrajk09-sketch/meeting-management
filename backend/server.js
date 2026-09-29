@@ -1,9 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const sequelize = require('./utils/database');
 const meetingRoutes = require('./routes/meetingRoutes');
-const Meeting = require('./models/meeting');
+const { sequelize } = require('./models'); // Imports from models/index.js
 
 const app = express();
 
@@ -14,7 +13,9 @@ app.use('/api/meetings', meetingRoutes);
 
 const PORT = 3000;
 
-sequelize.sync()
+// force: true is used to drop the old tables and recreate them 
+// since we completely changed the schema.
+sequelize.sync({ force: true })
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);

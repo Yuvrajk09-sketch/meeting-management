@@ -1,7 +1,9 @@
-const Meeting = require('../models/meeting');
+const { Meeting, User } = require('../models');
 
 exports.getAllMeetings = async () => {
-    return await Meeting.findAll();
+    return await Meeting.findAll({
+        include: User
+    });
 };
 
 exports.scheduleMeeting = async (username, email, time) => {
@@ -20,12 +22,21 @@ exports.scheduleMeeting = async (username, email, time) => {
         }
     }
 
-    return await Meeting.create({
-        username,
-        email,
-        time,
-        slotNumber: availableSlot
+    // Find or create the user based on email
+    const [user] = await User.findOrCreate({
+        where: { email },
+        defaults: { username }
     });
+
+    // Create meeting and link to user
+    const newMeeting = await Meeting.create({
+        time,
+        slotNumber: availableSlot,
+        userId: user.id
+    });
+
+    // Return the meeting with the user included so the frontend has the data it expects
+    return await Meeting.findByPk(newMeeting.id, { include: User });
 };
 
 exports.cancelMeeting = async (id) => {
@@ -37,13 +48,12 @@ exports.cancelMeeting = async (id) => {
 };
 
 exports.editMeeting = async (id, time) => {
-    const meeting = await Meeting.findByPk(id);
+    const meeting = await Meeting.findByPk(id, { include: User });
     if (!meeting) {
         throw new Error('Meeting not found');
     }
 
     if (meeting.time === time) {
-         // same time, do nothing
          return meeting;
     }
 

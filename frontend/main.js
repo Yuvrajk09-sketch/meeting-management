@@ -69,26 +69,76 @@ function renderMeetings(meetings) {
         const col = document.createElement('div');
         col.className = 'col-md-6 col-lg-4';
         
-        col.innerHTML = `
-            <div class="meeting-card">
-                <h5 class="text-info">${meeting.username}</h5>
-                <p class="text-light mb-1"><small>${meeting.email}</small></p>
-                <div class="d-flex align-items-center mb-3">
-                    <span class="badge bg-primary me-2">${meeting.time}</span>
-                    <span class="badge bg-secondary">Slot ${meeting.slotNumber}/3</span>
-                </div>
-                
-                <p class="text-light small mt-3">
-                    Hi <strong>${meeting.username}</strong>, you have scheduled a meeting on <strong>${meeting.time}</strong> and slot <strong>${meeting.slotNumber}</strong>. Here is your link, click to join:
-                </p>
-                <a href="${meetLink}" target="_blank" class="meet-link">Join Google Meet</a>
-                
-                <div class="action-btns">
-                    <button class="btn-action btn-edit" onclick="editMeeting(${meeting.id}, '${meeting.username}', '${meeting.email}', '${meeting.time}')">Edit</button>
-                    <button class="btn-action btn-delete" onclick="deleteMeeting(${meeting.id})">Cancel</button>
-                </div>
-            </div>
-        `;
+        // Create the main card container
+        const card = document.createElement('div');
+        card.className = 'meeting-card';
+
+        // Create the username header
+        const nameHeader = document.createElement('h5');
+        nameHeader.className = 'text-info';
+        nameHeader.textContent = meeting.user.username;
+        card.appendChild(nameHeader);
+
+        // Create the email paragraph
+        const emailPara = document.createElement('p');
+        emailPara.className = 'text-light mb-1';
+        const emailSmall = document.createElement('small');
+        emailSmall.textContent = meeting.user.email;
+        emailPara.appendChild(emailSmall);
+        card.appendChild(emailPara);
+
+        // Create the badge container for time and slot
+        const badgeContainer = document.createElement('div');
+        badgeContainer.className = 'd-flex align-items-center mb-3';
+        
+        const timeBadge = document.createElement('span');
+        timeBadge.className = 'badge bg-primary me-2';
+        timeBadge.textContent = meeting.time;
+        badgeContainer.appendChild(timeBadge);
+        
+        const slotBadge = document.createElement('span');
+        slotBadge.className = 'badge bg-secondary';
+        slotBadge.textContent = `Slot ${meeting.slotNumber}/3`;
+        badgeContainer.appendChild(slotBadge);
+        
+        card.appendChild(badgeContainer);
+
+        // Create the meeting message
+        const messagePara = document.createElement('p');
+        messagePara.className = 'text-light small mt-3';
+        // Using innerHTML here just for the bold tags (<strong>), but we could use DOM nodes for those too!
+        messagePara.innerHTML = `Hi <strong>${meeting.user.username}</strong>, you have scheduled a meeting on <strong>${meeting.time}</strong> and slot <strong>${meeting.slotNumber}</strong>. Here is your link, click to join:`;
+        card.appendChild(messagePara);
+
+        // Create the Google Meet link
+        const meetLinkAnchor = document.createElement('a');
+        meetLinkAnchor.href = meetLink;
+        meetLinkAnchor.target = '_blank';
+        meetLinkAnchor.className = 'meet-link';
+        meetLinkAnchor.textContent = 'Join Google Meet';
+        card.appendChild(meetLinkAnchor);
+
+        // Create the action buttons container
+        const actionBtns = document.createElement('div');
+        actionBtns.className = 'action-btns';
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn-action btn-edit';
+        editBtn.textContent = 'Edit';
+        // Use an event listener instead of the inline 'onclick' attribute
+        editBtn.addEventListener('click', () => editMeeting(meeting.id, meeting.user.username, meeting.user.email, meeting.time));
+        actionBtns.appendChild(editBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-action btn-delete';
+        deleteBtn.textContent = 'Cancel';
+        deleteBtn.addEventListener('click', () => deleteMeeting(meeting.id));
+        actionBtns.appendChild(deleteBtn);
+
+        card.appendChild(actionBtns);
+        
+        // Finally, append the card to the column
+        col.appendChild(card);
         meetingsList.appendChild(col);
     });
 }

@@ -1,21 +1,22 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/database');
 
-const Meeting = sequelize.define('meeting', {
+const User = sequelize.define('user', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    time: {
-        type: DataTypes.STRING, // e.g. "2:00 PM"
+    username: {
+        type: DataTypes.STRING,
         allowNull: false
     },
-    slotNumber: {
-        type: DataTypes.INTEGER, // 1, 2, or 3
-        allowNull: false
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     }
 });
 
-module.exports = Meeting;
+module.exports = User;
