@@ -7,6 +7,21 @@ exports.getAllMeetings = async () => {
 };
 
 exports.scheduleMeeting = async (username, email, time) => {
+    const [user] = await User.findOrCreate({
+        where: { email },
+        defaults: { username }
+    });
+
+    if (user.username !== username) {
+        user.username = username;
+        await user.save();
+    }
+
+    const userMeeting = await Meeting.findOne({ where: { time, userId: user.id } });
+    if (userMeeting) {
+        throw new Error('You have already booked a meeting for this time slot.');
+    }
+
     const existingMeetings = await Meeting.findAll({ where: { time } });
     
     if (existingMeetings.length >= 3) {
@@ -18,24 +33,16 @@ exports.scheduleMeeting = async (username, email, time) => {
     for (let i = 1; i <= 3; i++) {
         if (!bookedSlots.includes(i)) {
             availableSlot = i;
-            break;
+            break; 
         }
     }
 
-    // Find or create the user based on email
-    const [user] = await User.findOrCreate({
-        where: { email },
-        defaults: { username }
-    });
-
-    // Create meeting and link to user
     const newMeeting = await Meeting.create({
         time,
         slotNumber: availableSlot,
         userId: user.id
     });
 
-    // Return the meeting with the user included so the frontend has the data it expects
     return await Meeting.findByPk(newMeeting.id, { include: User });
 };
 
@@ -47,33 +54,52 @@ exports.cancelMeeting = async (id) => {
     return result;
 };
 
-exports.editMeeting = async (id, time) => {
-    const meeting = await Meeting.findByPk(id, { include: User });
+exports.editMeeting = async (id, time, username, email) => {
+    const meeting = await Meeting.findByPk(id);
     if (!meeting) {
         throw new Error('Meeting not found');
     }
 
-    if (meeting.time === time) {
-         return meeting;
+    const [targetUser] = await User.findOrCreate({
+        where: { email },
+        defaults: { username }
+    });
+    
+    if (targetUser.username !== username) {
+        targetUser.username = username;
+        await targetUser.save();
     }
 
-    const existingMeetings = await Meeting.findAll({ where: { time } });
-    if (existingMeetings.length >= 3) {
-        throw new Error('All 3 slots for this new time are already booked.');
+    if (meeting.time === time && meeting.userId === targetUser.id) {
+         return await Meeting.findByPk(id, { include: User });
     }
 
-    const bookedSlots = existingMeetings.map(m => m.slotNumber);
-    let availableSlot = 1;
-    for (let i = 1; i <= 3; i++) {
-        if (!bookedSlots.includes(i)) {
-            availableSlot = i;
-            break;
+    const existingUserMeeting = await Meeting.findOne({ where: { time, userId: targetUser.id } });
+    if (existingUserMeeting && existingUserMeeting.id !== meeting.id) {
+        throw new Error('You have already booked a meeting for this time slot.');
+    }
+
+    if (meeting.time !== time) {
+        const existingMeetings = await Meeting.findAll({ where: { time } });
+        if (existingMeetings.length >= 3) {
+            throw new Error('All 3 slots for this new time are already booked.');
         }
+
+        const bookedSlots = existingMeetings.map(m => m.slotNumber);
+        let availableSlot = 1;
+        for (let i = 1; i <= 3; i++) {
+            if (!bookedSlots.includes(i)) {
+                availableSlot = i;
+                break;
+            }
+        }
+
+        meeting.time = time;
+        meeting.slotNumber = availableSlot;
     }
 
-    meeting.time = time;
-    meeting.slotNumber = availableSlot;
+    meeting.userId = targetUser.id;
     await meeting.save();
 
-    return meeting;
+    return await Meeting.findByPk(id, { include: User });
 };

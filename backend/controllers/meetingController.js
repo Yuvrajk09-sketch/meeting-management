@@ -39,9 +39,9 @@ exports.cancelMeeting = async (req, res) => {
 exports.editMeeting = async (req, res) => {
     try {
         const { id } = req.params;
-        const { time } = req.body;
+        const { time, username, email } = req.body;
         
-        const meeting = await meetingService.editMeeting(id, time);
+        const meeting = await meetingService.editMeeting(id, time, username, email);
         res.status(200).json(meeting);
     } catch (err) {
         console.log(err);
